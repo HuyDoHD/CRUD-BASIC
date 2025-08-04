@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/myapp';
 
@@ -8,7 +8,7 @@ export const dbConfig = async () => {
       // Tùy chọn khuyến nghị (có thể tùy chỉnh thêm)
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    } as any); // Tạm dùng `as any` nếu có cảnh báo TS
+    } as ConnectOptions); // Tạm dùng `as any` nếu có cảnh báo TS
 
     console.log('✅ Connected to MongoDB');
   } catch (err) {

@@ -5,7 +5,7 @@ import type { ObjectSchema } from 'joi';
 export class JoiValidationPipe implements PipeTransform {
   constructor(private schema: ObjectSchema) {}
 
-  transform(value: any) {
+  transform<T extends Record<string, unknown>>(value: T): T {
     // Kiểm tra nếu không có body (value undefined/null) hoặc không phải object
     if (!value || typeof value !== 'object') {
       throw new BadRequestException('Validation failed: request body must be a valid object');
