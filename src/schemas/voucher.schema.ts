@@ -5,7 +5,7 @@ export type VoucherDocument = Voucher & Document;
 
 @Schema({ collection: 'vouchers', timestamps: true })
 export class Voucher {
-  @Prop({ required: true, unique: true })
+  @Prop({ type: String, required: true, unique: true })
   code: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true })

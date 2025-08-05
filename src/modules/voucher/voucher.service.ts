@@ -1,4 +1,3 @@
-// src/modules/voucher/voucher.service.ts
 import {
     Injectable,
     NotFoundException,
@@ -9,6 +8,10 @@ import {
   import { Voucher } from '../../schemas/voucher.schema';
   import { Events } from '../../schemas/event.schema';
   import { Model, Connection } from 'mongoose';
+import { InjectQueue } from '@nestjs/bull';
+import bull from 'bull';
+import { UserPayload } from 'src/common/interfaces/user-payload.interface';
+import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
   
   @Injectable()
   export class VoucherService {
@@ -16,14 +19,17 @@ import {
       @InjectModel(Voucher.name) private voucherModel: Model<Voucher>,
       @InjectModel(Events.name) private eventModel: Model<Events>,
       @InjectConnection() private readonly connection: Connection,
-    ) {}
+      @InjectQueue('email-queue') private readonly emailQueue: bull.Queue,
+    ) {
+    }
   
     private generateCode(eventName: string, issuedNumber: number): string {
         const sanitized = eventName.trim().toUpperCase().replace(/\s+/g, '_');
         return `${sanitized}_${issuedNumber + 1}`;
     }
   
-    async issueVoucher(eventId: string): Promise<Voucher> {
+    async issueVoucher(eventId: string, currentUser: UserPayload): Promise<Voucher> {
+      console.log(currentUser)
       const MAX_RETRY = 3;
       let retries = 0;
   
@@ -50,7 +56,6 @@ import {
           }
   
           const code = this.generateCode(updatedEvent.name, updatedEvent.issued);
-          console.log(code);
           const voucher = new this.voucherModel({
             eventId: updatedEvent._id,
             code,
@@ -58,6 +63,11 @@ import {
     
           await voucher.save({ session });
           await session.commitTransaction();
+
+          const job = await this.emailQueue.add('send-voucher', {
+            email: currentUser.email,
+            code: voucher.code,
+          });
           
           return voucher;
         } catch (err) {
@@ -75,6 +85,22 @@ import {
       }
   
       throw new HttpException('Transaction failed after retries', 500);
+    }
+
+    async findAll(): Promise<Voucher[]> {
+      return this.voucherModel.find().exec();
+    }
+
+    async paginatedList(page: number, limit: number) {
+      const skip = (page - 1) * limit;
+
+      const [data, total] = await Promise.all([
+        this.voucherModel.find().skip(skip).limit(limit).exec(),
+        this.voucherModel.countDocuments().exec(),
+      ]);
+    
+      const meta = new PageMetaDto({ total, page, limit });
+      return new PageDto(data, meta);
     }
   }
   

@@ -7,17 +7,24 @@ import { ConfigModule } from '@nestjs/config';
 import { AgendaModule } from './agenda/agenda.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
+import { QueueModule } from './queue/queue.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(
-      process.env.MONGO_URI || 'mongodb://localhost:27017/defaultdb',
-    ),
+    MongooseModule.forRootAsync({
+      useFactory: async () => {
+        console.log('🔗 MONGO_URI:', process.env.MONGO_URI);
+        return {
+          uri: process.env.MONGO_URI,
+        };
+      },
+    }),
     AgendaModule,
     AuthModule,
+    QueueModule,
     ...Modules,
   ],
   controllers: [AppController],

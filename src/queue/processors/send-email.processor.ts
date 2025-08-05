@@ -12,4 +12,10 @@ export class SendEmailProcessor {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log(`Email sent to ${to}`);
   }
+
+  @Process('send-voucher')
+  async handleSendVoucher(job: Job) {
+    const { email, code } = job.data;
+    console.log(`📧 Sending voucher code ${code} to ${email}`);
+  }
 }

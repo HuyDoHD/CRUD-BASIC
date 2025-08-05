@@ -1,0 +1,33 @@
+service: nestjs-serverless
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  environment:
+    MONGO_URI: mongodb+srv://huydo:nG9KkLiXJqugxccX@cluster0.0bjuywv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+functions:
+  api:
+    handler: dist/lambda.handler
+    timeout: 30
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+    build:
+      esbuild: true
+      external:
+        - class-transformer/storage
+        - "@nestjs/websockets/socket-module"
+        - "@nestjs/microservices/microservices-module"
+        - "@nestjs/microservices"
+      sourcemap: true
+      target: node18
+      platform: node
+
+plugins:
+  - serverless-offline
+
+    
+

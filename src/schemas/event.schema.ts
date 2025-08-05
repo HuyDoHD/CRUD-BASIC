@@ -1,17 +1,23 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-export type EventDocument = Events & Document;
+export type EventDocument = Document & Events;
 
 @Schema({ collection: 'events', timestamps: true })
 export class Events {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ type: Number, required: true })
   maxQuantity: number;
 
-  @Prop({ default: 0 }) // số voucher đã phát hành
+  @Prop({ type: Number, default: 0 }) // số voucher đã phát hành
   issued: number;
+
+  @Prop({ type: String, default: null })
+  editingUserId: string | null;
+
+  @Prop({ type: Date, default: null })
+  editingExpiresAt: Date | null;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

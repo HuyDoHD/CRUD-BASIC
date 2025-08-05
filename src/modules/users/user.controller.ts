@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UsePipes, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UsePipes,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,7 +19,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserResponseDto } from './dto/user-response.dto';
-
+import { updateUserSchema } from './schemas/update-user.schema';
 
 @ApiTags('users')
 @Controller('users')
@@ -35,8 +45,10 @@ export class UserController {
   }
 
   @Put(':id')
-  // @UsePipes(new JoiValidationPipe(updateUserSchema))
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  update(
+    @Param('id') id: string,
+    @Body(new JoiValidationPipe(updateUserSchema)) updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     return this.userService.update(id, updateUserDto);
   }
 

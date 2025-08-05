@@ -8,6 +8,7 @@ export class JoiValidationPipe implements PipeTransform {
   transform<T extends Record<string, unknown>>(value: T): T {
     // Kiểm tra nếu không có body (value undefined/null) hoặc không phải object
     if (!value || typeof value !== 'object') {
+      console.warn('Invalid body received:', value);
       throw new BadRequestException('Validation failed: request body must be a valid object');
     }
 

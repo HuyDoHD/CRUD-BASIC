@@ -2,27 +2,25 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 import dotenv from 'dotenv';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { setupSwagger } from './swagger/swagger.config';
 dotenv.config();
+import { dbConfig } from './config/db.config';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   try {
-    // Kết nối MongoDB
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/myapp';
-    await mongoose.connect(mongoURI, {
-      // Tùy chọn theo mongoose 6+ thì không cần options này nữa
-      // useNewUrlParser: true,
-      // useUnifiedTopology: true,
-    });
-    logger.log('✅ MongoDB connected');
-
-    // Khởi tạo Nest app
+    await dbConfig();
     const app = await NestFactory.create(AppModule);
+
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true, 
+      }),
+    );
 
     // Bật CORS nếu cần
     app.enableCors();

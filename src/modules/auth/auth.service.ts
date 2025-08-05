@@ -5,6 +5,7 @@ import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -13,11 +14,12 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<UserResponseDto> {
-    const user = await this.userService.findByEmail(email);
-    if (user && await bcrypt.compare(password, user.password)) {
-      const { password, ...safeUser } = user;
-      return plainToInstance(UserResponseDto, safeUser);
+  async validateUser(email: string, password: string): Promise<UserDto> {
+    console.log('ENV MONGO_URI:', process.env.MONGO_URI);
+    const user = await this.userService.findByEmail(email) as UserDocument;
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const { password, ...rest } = user.toObject(); 
+      return plainToInstance(UserDto, rest);
     }
     throw new UnauthorizedException();
   }
