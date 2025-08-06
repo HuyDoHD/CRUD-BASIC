@@ -1,17 +1,14 @@
 import {
     Injectable,
-    NotFoundException,
     HttpException,
-    Inject,
   } from '@nestjs/common';
   import { InjectModel, InjectConnection } from '@nestjs/mongoose';
   import { Voucher } from '../../schemas/voucher.schema';
   import { Events } from '../../schemas/event.schema';
   import { Model, Connection } from 'mongoose';
-import { InjectQueue } from '@nestjs/bull';
-import bull from 'bull';
 import { UserPayload } from 'src/common/interfaces/user-payload.interface';
 import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
+import { QueueService } from 'src/queue/queue.service';
   
   @Injectable()
   export class VoucherService {
@@ -19,7 +16,7 @@ import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
       @InjectModel(Voucher.name) private voucherModel: Model<Voucher>,
       @InjectModel(Events.name) private eventModel: Model<Events>,
       @InjectConnection() private readonly connection: Connection,
-      @InjectQueue('email-queue') private readonly emailQueue: bull.Queue,
+      private readonly queueService: QueueService
     ) {
     }
   
@@ -63,9 +60,10 @@ import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
           await voucher.save({ session });
           await session.commitTransaction();
 
-          const job = await this.emailQueue.add('send-voucher', {
+          const job = await this.queueService.sendVoucherEmailJob({
             email: currentUser.email,
-            code: voucher.code,
+            voucherCode: voucher.code,
+            eventName: updatedEvent.name,
           });
           
           return voucher;

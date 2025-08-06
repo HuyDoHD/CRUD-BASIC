@@ -11,6 +11,7 @@ import { QueueModule } from './queue/queue.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { join } from 'path';
     AgendaModule,
     AuthModule,
     QueueModule,
+    MailModule,
     ...Modules,
   ],
   controllers: [AppController],

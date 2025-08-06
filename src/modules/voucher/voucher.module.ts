@@ -5,6 +5,7 @@ import { Events, EventSchema } from '../../schemas/event.schema';
 import { VoucherService } from './voucher.service';
 import { VoucherController } from './voucher.controller';
 import { BullModule } from '@nestjs/bull';
+import { QueueModule } from 'src/queue/queue.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BullModule } from '@nestjs/bull';
     BullModule.registerQueue({
       name: 'email-queue',
     }),
+    QueueModule,
   ],
   providers: [VoucherService],
   controllers: [VoucherController],

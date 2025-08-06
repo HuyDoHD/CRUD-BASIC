@@ -1,9 +1,12 @@
 // src/queue/processors/send-email.processor.ts
 import { Process, Processor } from '@nestjs/bull';
 import type { Job } from 'bull';
+import { MailService } from 'src/mail/mail.service';
 
 @Processor('email-queue')
 export class SendEmailProcessor {
+  constructor(private readonly mailService: MailService) {}
+
   @Process()
   async handleEmailJob(job: Job) {
     const { to, subject, body } = job.data;
@@ -13,9 +16,15 @@ export class SendEmailProcessor {
     console.log(`Email sent to ${to}`);
   }
 
-  @Process('send-voucher')
-  async handleSendVoucher(job: Job) {
-    const { email, code } = job.data;
-    console.log(`📧 Sending voucher code ${code} to ${email}`);
+  @Process('send-voucher-email')
+  async handleSendVoucherEmail(job: Job) {
+    const { email, voucherCode, eventName } = job.data;
+    await this.mailService.sendVoucherEmail(email, voucherCode, eventName);
+  }
+
+  @Process('send-welcome-email')
+  async handleSendWelcomeEmail(job: Job) {
+    const { email, name } = job.data;
+    await this.mailService.sendWelcome(email, name);
   }
 }

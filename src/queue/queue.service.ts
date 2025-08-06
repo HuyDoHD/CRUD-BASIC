@@ -8,7 +8,7 @@ export class QueueService {
     @InjectQueue('email-queue') private emailQueue: Queue,
   ) {}
 
-  async sendEmailJob(to: string, subject: string, body: string) {
-    await this.emailQueue.add({ to, subject, body });
+  async sendVoucherEmailJob(data: { email: string; voucherCode: string; eventName: string }) {
+    await this.emailQueue.add('send-voucher-email', data);
   }
 }
