@@ -9,14 +9,18 @@ export class MailService {
     await this.mailerService.sendMail({
       to: email,
       subject: `Welcome ${name} to our system!`,
-      template: './welcome', 
+      template: './welcome',
       context: {
         name: name,
       },
     });
   }
 
-  async sendVoucherEmail(email: string, voucherCode: string, eventName: string) {
+  async sendVoucherEmail(
+    email: string,
+    voucherCode: string,
+    eventName: string,
+  ) {
     console.log(email, voucherCode, eventName);
     try {
       const result = await this.mailerService.sendMail({
@@ -28,7 +32,7 @@ export class MailService {
           eventName,
         },
       });
-  
+
       console.log('✅ Email sent:', result);
       return result;
     } catch (error) {

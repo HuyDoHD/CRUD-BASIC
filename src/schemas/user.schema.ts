@@ -14,7 +14,13 @@ export class User {
   @Field()
   name: string;
 
-  @Prop({ type: String, required: true, unique: true, lowercase: true, trim: true })
+  @Prop({
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+  })
   @Field()
   email: string;
 

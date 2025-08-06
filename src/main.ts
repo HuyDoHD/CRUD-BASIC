@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 
 import dotenv from 'dotenv';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import mongoose from 'mongoose';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { setupSwagger } from './swagger/swagger.config';
 dotenv.config();
 import { dbConfig } from './config/db.config';
@@ -18,7 +16,7 @@ async function bootstrap() {
 
     app.useGlobalPipes(
       new ValidationPipe({
-        transform: true, 
+        transform: true,
       }),
     );
 

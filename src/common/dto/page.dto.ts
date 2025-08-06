@@ -11,7 +11,15 @@ export class PageMetaDto {
   @ApiProperty()
   limit: number;
 
-  constructor({ total, page, limit }: { total: number; page: number; limit: number }) {
+  constructor({
+    total,
+    page,
+    limit,
+  }: {
+    total: number;
+    page: number;
+    limit: number;
+  }) {
     this.total = total;
     this.page = page;
     this.limit = limit;
@@ -19,11 +27,11 @@ export class PageMetaDto {
 }
 
 export class PageDto<T> {
-    data: T[];
-    meta: PageMetaDto;
-  
-    constructor(data: T[], meta: PageMetaDto) {
-      this.data = data;
-      this.meta = meta;
-    }
+  data: T[];
+  meta: PageMetaDto;
+
+  constructor(data: T[], meta: PageMetaDto) {
+    this.data = data;
+    this.meta = meta;
   }
+}

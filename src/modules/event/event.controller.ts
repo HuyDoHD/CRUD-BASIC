@@ -16,7 +16,7 @@ export class EventController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: userPayloadInterface.UserPayload) {
+  findAll() {
     return this.eventService.findAll();
   }
 
@@ -26,17 +26,26 @@ export class EventController {
   }
 
   @Post(':id/editable/me')
-  requestEdit(@Param('id') id: string, @CurrentUser() user: userPayloadInterface.UserPayload) {
+  requestEdit(
+    @Param('id') id: string,
+    @CurrentUser() user: userPayloadInterface.UserPayload,
+  ) {
     return this.eventService.requestEdit(id, user);
   }
 
   @Post(':id/editable/release')
-  releaseEdit(@Param('id') id: string, @CurrentUser() user: userPayloadInterface.UserPayload) {
+  releaseEdit(
+    @Param('id') id: string,
+    @CurrentUser() user: userPayloadInterface.UserPayload,
+  ) {
     return this.eventService.releaseEdit(id, user);
   }
 
   @Post(':id/editable/maintain')
-  maintainEdit(@Param('id') id: string, @CurrentUser() user: userPayloadInterface.UserPayload) {
+  maintainEdit(
+    @Param('id') id: string,
+    @CurrentUser() user: userPayloadInterface.UserPayload,
+  ) {
     return this.eventService.maintainEdit(id, user);
   }
 }

@@ -8,7 +8,7 @@ import { MailModule } from 'src/mail/mail.module';
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'localhost',  // hoặc tên container Docker
+        host: 'localhost', // hoặc tên container Docker
         port: 6379,
       },
     }),

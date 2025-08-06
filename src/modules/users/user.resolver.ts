@@ -8,14 +8,12 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(
-    private readonly userService: UserService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Query(() => [User])
   @UseGuards(GqlAuthGuard)
   async users(@CurrentUser() user: User) {
-    console.log(user)
+    console.log(user);
     return this.userService.findAll();
   }
 

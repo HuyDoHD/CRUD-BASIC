@@ -1,4 +1,3 @@
-// src/queue/processors/send-email.processor.ts
 import { Process, Processor } from '@nestjs/bull';
 import type { Job } from 'bull';
 import { MailService } from 'src/mail/mail.service';

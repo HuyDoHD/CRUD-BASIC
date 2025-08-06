@@ -10,7 +10,9 @@ export class AgendaService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     this.agenda = new Agenda({
       // Dùng cùng connection MongoDB của bạn (có thể dùng URI hoặc connection string)
-      db: { address: process.env.MONGO_URI || 'mongodb://localhost:27017/defaultdb' },
+      db: {
+        address: process.env.MONGO_URI || 'mongodb://localhost:27017/defaultdb',
+      },
     });
 
     // Định nghĩa job kiểm tra kết nối DB
@@ -19,7 +21,9 @@ export class AgendaService implements OnModuleInit, OnModuleDestroy {
       if (state === 1) {
         console.log(`[Agenda] MongoDB connection is stable.`);
       } else {
-        console.error(`[Agenda] MongoDB connection is NOT stable! State: ${state}`);
+        console.error(
+          `[Agenda] MongoDB connection is NOT stable! State: ${state}`,
+        );
       }
     });
 

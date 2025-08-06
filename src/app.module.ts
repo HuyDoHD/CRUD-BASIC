@@ -12,6 +12,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { MailModule } from './mail/mail.module';
+import { LoggerMiddleware } from './logger/logger.middleware';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -28,12 +30,13 @@ import { MailModule } from './mail/mail.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      context: ({ req }) => ({ req }), 
+      context: ({ req }) => ({ req }),
     }),
     AgendaModule,
     AuthModule,
     QueueModule,
     MailModule,
+    LoggerModule,
     ...Modules,
   ],
   controllers: [AppController],
@@ -42,12 +45,12 @@ import { MailModule } from './mail/mail.module';
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(AuthMiddleware)
-      .exclude( 
+      .apply(AuthMiddleware, LoggerMiddleware)
+      .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'user/create', method: RequestMethod.POST },
         { path: 'graphql', method: RequestMethod.ALL },
       )
-      .forRoutes('*'); 
+      .forRoutes('*');
   }
 }
