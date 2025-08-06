@@ -48,7 +48,7 @@ export class AppModule {
       .apply(AuthMiddleware, LoggerMiddleware)
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
-        { path: 'user/create', method: RequestMethod.POST },
+        { path: 'users', method: RequestMethod.POST },
         { path: 'graphql', method: RequestMethod.ALL },
       )
       .forRoutes('*');
