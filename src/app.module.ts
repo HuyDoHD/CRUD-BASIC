@@ -8,6 +8,9 @@ import { AgendaModule } from './agenda/agenda.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { QueueModule } from './queue/queue.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -16,11 +19,15 @@ import { QueueModule } from './queue/queue.module';
     }),
     MongooseModule.forRootAsync({
       useFactory: async () => {
-        console.log('🔗 MONGO_URI:', process.env.MONGO_URI);
         return {
           uri: process.env.MONGO_URI,
         };
       },
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      context: ({ req }) => ({ req }), 
     }),
     AgendaModule,
     AuthModule,
@@ -37,6 +44,7 @@ export class AppModule {
       .exclude( 
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'user/create', method: RequestMethod.POST },
+        { path: 'graphql', method: RequestMethod.ALL },
       )
       .forRoutes('*'); 
   }

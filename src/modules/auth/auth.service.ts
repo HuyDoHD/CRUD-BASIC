@@ -15,7 +15,6 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDto> {
-    console.log('ENV MONGO_URI:', process.env.MONGO_URI);
     const user = await this.userService.findByEmail(email) as UserDocument;
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...rest } = user.toObject(); 

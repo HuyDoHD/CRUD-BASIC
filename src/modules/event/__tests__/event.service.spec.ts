@@ -28,8 +28,7 @@ describe('EventService', () => {
   });
 
   it('should edit event and lock editing', async () => {
-    const req = await service.requestEdit('64f06cfa8f4c3b2b1a2e1f33', { userId: 'user1', email: 'user1', role: 'admin' })
-    console.log(req)
+    await service.requestEdit('64f06cfa8f4c3b2b1a2e1f33', { userId: 'user1', email: 'user1', role: 'admin' })
     await service.editEvent('64f06cfa8f4c3b2b1a2e1f33', { name: 'Updated Event' }, { userId: 'user1', email: 'user1', role: 'admin' });
 
     const result = await eventModel.findOne({ _id: '64f06cfa8f4c3b2b1a2e1f33' });
@@ -51,7 +50,7 @@ describe('EventService', () => {
   });
 
   it('should maintain editing lock', async () => {
-    const req = await service.requestEdit('64f06cfa8f4c3b2b1a2e1f33', { userId: 'user1', email: 'user1', role: 'admin' })
+    await service.requestEdit('64f06cfa8f4c3b2b1a2e1f33', { userId: 'user1', email: 'user1', role: 'admin' })
 
     await service.editEvent('64f06cfa8f4c3b2b1a2e1f33', { name: 'Updated Event' }, { userId: 'user1', email: 'user1', role: 'admin' });
 

@@ -13,7 +13,6 @@ async function bootstrap(): Promise<Handler> {
   const adapter = new ExpressAdapter(expressApp);
 
   const app = await NestFactory.create(AppModule, adapter);
-  console.log('ENV MONGO_URI:', process.env.MONGO_URI);
   setupSwagger(app);
   await app.init();
 
@@ -26,10 +25,7 @@ export const handler = async (
   callback: Callback,
 ) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  console.log('🔥 Lambda invoked with event:', JSON.stringify(event));
-  console.log('🔥 Context:', context);
   if (!server) {
-    console.log('⚡ Bootstrapping new NestJS app...');
     server = await bootstrap();
   }
   return server(event, context, callback);

@@ -1,0 +1,26 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  role: String!
+  isActive: Boolean!
+}
+
+type Query {
+  users: [User!]!
+}
+
+type Mutation {
+  createUser(input: CreateUserGraphDto!): User!
+}
+
+input CreateUserGraphDto {
+  name: String!
+  email: String!
+  password: String!
+  role: String!
+}

@@ -87,7 +87,7 @@ export class EventService {
   }
 
   async releaseEdit(eventId: string, user: UserPayload) {
-    await this.eventModel.updateOne(
+    const event = await this.eventModel.updateOne(
       {
         _id: eventId,
         editingUserId: user.userId,
@@ -95,8 +95,11 @@ export class EventService {
       {
         editingUserId: null,
         editingExpiresAt: null,
-      },
+      }
     );
+    if (event.matchedCount === 0) {
+      throw new NotFoundException('You do not have permission to release this event');
+    }
     return { message: 'Edit access released successfully' };
   }
 
@@ -116,7 +119,7 @@ export class EventService {
       { new: true },
     );
     if (!event) {
-      throw new NotFoundException('Event not found or already being edited');
+      throw new NotFoundException('You do not have permission to maintain this event');
     }
     return { message: 'Edit session extended successfully' };
   }

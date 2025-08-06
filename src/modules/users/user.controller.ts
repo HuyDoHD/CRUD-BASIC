@@ -17,7 +17,6 @@ import { JoiValidationPipe } from './pipes/joi-validation.pipe';
 import { createUserSchema } from './schemas/create-user.schema';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { UserResponseDto } from './dto/user-response.dto';
 import { updateUserSchema } from './schemas/update-user.schema';
 

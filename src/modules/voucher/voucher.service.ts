@@ -29,7 +29,6 @@ import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
     }
   
     async issueVoucher(eventId: string, currentUser: UserPayload): Promise<Voucher> {
-      console.log(currentUser)
       const MAX_RETRY = 3;
       let retries = 0;
   
