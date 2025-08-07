@@ -9,13 +9,11 @@ export const useLogin = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values: { email: string; password: string }) => {
-    try {
-      const { accessToken, refreshToken } = await authService.login(values);
+    const { accessToken, refreshToken } = await authService.login(values);
+    if (accessToken && refreshToken) {
       login(accessToken, refreshToken);
       message.success('Đăng nhập thành công!');
       navigate('/events');
-    } catch (err) {
-      message.error('Sai tài khoản hoặc mật khẩu');
     }
   };
 

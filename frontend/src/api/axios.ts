@@ -1,6 +1,8 @@
 // src/api/axios.ts
 import axios from 'axios';
 import { getMessageInstance } from '../utils/messageProxy';
+import { history } from '../utils/history';
+
 
 const api = axios.create({
   baseURL: 'http://localhost:3000',
@@ -32,7 +34,7 @@ api.interceptors.response.use(
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-        window.location.href = '/login';
+        history.push('/login');
       }
 
       const backendMsg = error.response?.data?.message;

@@ -10,6 +10,9 @@ export class Voucher {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true })
   eventId: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  userId: string;
 }
 
 export const VoucherSchema = SchemaFactory.createForClass(Voucher);

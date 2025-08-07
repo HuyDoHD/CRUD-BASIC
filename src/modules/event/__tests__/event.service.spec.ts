@@ -43,7 +43,7 @@ describe('EventService', () => {
       email: 'user1',
       role: 'admin',
     });
-    await service.editEvent(
+    await service.update(
       '64f06cfa8f4c3b2b1a2e1f33',
       { name: 'Updated Event' },
       { userId: 'user1', email: 'user1', role: 'admin' },
@@ -82,7 +82,7 @@ describe('EventService', () => {
       role: 'admin',
     });
 
-    await service.editEvent(
+    await service.update(
       '64f06cfa8f4c3b2b1a2e1f33',
       { name: 'Updated Event' },
       { userId: 'user1', email: 'user1', role: 'admin' },
@@ -156,7 +156,7 @@ describe('EventService', () => {
 
   it('should throw if editing non-existent event', async () => {
     await expect(
-      service.editEvent(
+      service.update(
         '000000000000000000000000',
         { name: 'Invalid Event' },
         {

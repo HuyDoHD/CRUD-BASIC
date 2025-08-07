@@ -11,10 +11,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserResponseDto } from './dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { PageDto } from 'src/common/dto/page.dto';
+import { PageUserDto } from './dto/page-user.dto';
+import { VoucherDocument, Voucher } from 'src/schemas/voucher.schema';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Voucher.name) private voucherModel: Model<VoucherDocument>,
+  ) {}
 
   async create(dto: CreateUserDto): Promise<UserResponseDto> {
     const existing = await this.userModel.findOne({ email: dto.email });
@@ -41,6 +47,36 @@ export class UserService {
     });
   }
 
+  async pagination(query: PageUserDto): Promise<PageDto<UserResponseDto>> {
+    const skip = (query.page - 1) * query.limit;
+
+    const whereCon: any = {};
+    if (query.name) whereCon.name = { $regex: query.name, $options: 'i' };
+    if (query.email) whereCon.email = { $regex: query.email, $options: 'i' };
+    if (query.role) whereCon.role = query.role;
+    if (query.status)
+      whereCon.isActive = query.status === 'active' ? true : false;
+
+    const [users, total] = await Promise.all([
+      this.userModel.find(whereCon).skip(skip).limit(query.limit).exec(),
+      this.userModel.countDocuments(whereCon).exec(),
+    ]);
+
+    const data = users.map((user) => {
+      const { password: _password, ...userData } = user.toObject();
+      return plainToInstance(UserResponseDto, userData);
+    });
+
+    return {
+      data,
+      meta: {
+        total: total,
+        page: query.page,
+        limit: query.limit,
+      },
+    };
+  }
+
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.userModel.findById(id).exec();
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
@@ -59,6 +95,11 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserResponseDto> {
+    if (updateUserDto.newPassword) {
+      const hashedPassword = await bcrypt.hash(updateUserDto.newPassword, 10);
+      updateUserDto.password = hashedPassword;
+      delete updateUserDto.newPassword;
+    }
     const updatedUser = await this.userModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
@@ -68,8 +109,9 @@ export class UserService {
     return plainToInstance(UserResponseDto, userData);
   }
 
-  async remove(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const deleted = await this.userModel.findByIdAndDelete(id).exec();
+    await this.voucherModel.deleteMany({ userId: id }).exec();
     if (!deleted) throw new NotFoundException(`User with id ${id} not found`);
   }
 }

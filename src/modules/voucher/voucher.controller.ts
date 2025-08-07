@@ -1,9 +1,9 @@
-import { Controller, Post, Param, Get, Query } from '@nestjs/common';
+import { Controller, Post, Param, Get, Query, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VoucherService } from './voucher.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import * as userPayloadInterface from 'src/common/interfaces/user-payload.interface';
-import { PageQueryDto } from 'src/common/dto/page-query.dto';
+import { PageVoucherDto } from './dto/page-voucher.dto';
 
 @ApiTags('vouchers')
 @Controller('vouchers')
@@ -23,8 +23,13 @@ export class VoucherController {
     return this.voucherService.findAll();
   }
 
-  @Get('list')
-  async paginatedList(@Query() query: PageQueryDto) {
-    return this.voucherService.paginatedList(query.page, query.limit);
+  @Get('pagination')
+  async pagination(@Query() query: PageVoucherDto, @CurrentUser() user: userPayloadInterface.UserPayload) {
+    return this.voucherService.pagination(query, user);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.voucherService.delete(id);
   }
 }

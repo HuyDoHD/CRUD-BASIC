@@ -8,6 +8,7 @@ import {
   Body,
   UsePipes,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,10 +16,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JoiValidationPipe } from './pipes/joi-validation.pipe';
 import { createUserSchema } from './schemas/create-user.schema';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserResponseDto } from './dto/user-response.dto';
 import { updateUserSchema } from './schemas/update-user.schema';
+import { PageQueryDto } from 'src/common/dto/page-query.dto';
+import { PageDto } from 'src/common/dto/page.dto';
+import { PageUserDto } from './dto/page-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -32,10 +35,15 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @Roles('admin')
   findAll(): Promise<UserResponseDto[]> {
     return this.userService.findAll();
+  }
+
+  @Get('pagination')
+  @Roles('admin')
+  pagination(@Query() query: PageUserDto): Promise<PageDto<UserResponseDto>> {
+    return this.userService.pagination(query);
   }
 
   @Get(':id')
@@ -52,7 +60,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.userService.remove(id);
+  delete(@Param('id') id: string): Promise<void> {
+    return this.userService.delete(id);
   }
 }

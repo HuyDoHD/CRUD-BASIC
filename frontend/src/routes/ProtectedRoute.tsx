@@ -13,7 +13,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectTo = '/login',
 }) => {
   const { user, loading } = useAuth();
-  console.log("user", user)
 
   if (loading) {
     return (

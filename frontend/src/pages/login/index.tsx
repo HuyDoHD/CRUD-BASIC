@@ -9,10 +9,7 @@ const LoginPage: React.FC = () => {
       <Content>
         <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
           <Col xs={22} sm={16} md={12} lg={8} xl={6}>
-            <Card
-              style={{ borderRadius: 8 }}
-              bodyStyle={{ padding: '32px 24px' }}
-            >
+            <Card style={{ borderRadius: 8 }}>
               <LoginForm />
             </Card>
           </Col>

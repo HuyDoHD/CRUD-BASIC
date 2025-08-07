@@ -1,7 +1,9 @@
 import api from '../api/axios';
+import type { PaginationParams } from '../common/type/pagination.interface';
 
 const apis = {
   vouchers: '/vouchers',
+  pagination: '/vouchers/pagination',
 };  
 
 export const voucherService = {
@@ -32,6 +34,11 @@ export const voucherService = {
 
   issueVoucher: async (eventId: string) => {
     const res = await api.post(`${apis.vouchers}/issue/${eventId}`);
+    return res.data;
+  },
+
+  pagination: async (params: PaginationParams) => {
+    const res = await api.get(apis.pagination, { params });
     return res.data;
   },
 };

@@ -28,7 +28,7 @@ export default function MainLayout() {
           <Navbar />
         </Header>
 
-        <Content style={{ margin: '16px', padding: 24, background: '#fff' }}>
+        <Content style={{ margin: '16px', padding: 12, background: '#fff' }}>
           <Outlet />
         </Content>
       </Layout>

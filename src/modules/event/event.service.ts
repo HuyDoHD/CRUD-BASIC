@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,11 +10,15 @@ import { Model } from 'mongoose';
 import { EventDocument, Events } from '../../schemas/event.schema';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UserPayload } from '../../common/interfaces/user-payload.interface';
+import { PageEventDto } from './dto/page-event.dto';
+import { PageDto, PageMetaDto } from 'src/common/dto/page.dto';
+import { VoucherDocument, Voucher } from '../../schemas/voucher.schema';
 
 @Injectable()
 export class EventService {
   constructor(
     @InjectModel(Events.name) private eventModel: Model<EventDocument>,
+    @InjectModel(Voucher.name) private voucherModel: Model<VoucherDocument>,
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Events> {
@@ -20,7 +26,7 @@ export class EventService {
     return createdEvent.save();
   }
 
-  async editEvent(
+  async update(
     id: string,
     eventDto: Partial<Events>,
     user: UserPayload,
@@ -54,6 +60,22 @@ export class EventService {
     return this.eventModel.find().exec();
   }
 
+  async pagination(query: PageEventDto) {
+    const { page, limit } = query;
+    const skip = (page - 1) * limit;
+    const whereCon: any = {}
+    if (query.name) whereCon.name = { $regex: query.name, $options: 'i' }
+    if (query.maxQuantity) whereCon.maxQuantity = { $gte: query.maxQuantity }
+    const events = await this.eventModel
+      .find(whereCon)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const total = await this.eventModel.countDocuments(whereCon);
+    const meta = new PageMetaDto({ total, page, limit });
+    return new PageDto(events, meta);
+  }
+
   async findOne(id: string): Promise<Events> {
     const event = await this.eventModel.findById(id);
     if (!event) {
@@ -81,7 +103,7 @@ export class EventService {
       { new: true },
     );
     if (!event) {
-      throw new NotFoundException('Event not found or already being edited');
+      throw new HttpException('Event already being edited', HttpStatus.CONFLICT);
     }
     return event;
   }
@@ -126,5 +148,15 @@ export class EventService {
       );
     }
     return { message: 'Edit session extended successfully' };
+  }
+
+  async delete(id: string) {
+    const event = await this.eventModel.findById(id);
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+    await this.eventModel.deleteOne({ _id: id }).exec();
+    await this.voucherModel.deleteMany({ eventId: id }).exec();
+    return { message: 'Event deleted successfully' };
   }
 }

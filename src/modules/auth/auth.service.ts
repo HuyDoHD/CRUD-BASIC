@@ -1,9 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/user.service';
 import { UserDto } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
-import { UserResponseDto } from '../users/dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserDocument } from 'src/schemas/user.schema';
 
@@ -20,7 +19,7 @@ export class AuthService {
       const { password, ...rest } = user.toObject();
       return plainToInstance(UserDto, rest);
     }
-    throw new UnauthorizedException();
+    throw new HttpException('Email hoặc mật khẩu không đúng', HttpStatus.BAD_REQUEST);
   }
 
   async login(

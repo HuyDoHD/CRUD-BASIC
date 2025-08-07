@@ -10,7 +10,7 @@ function App() {
   const { message } = AntdApp.useApp();
 
   useEffect(() => {
-    setMessageInstance(message); // Gán message context vào proxy
+    setMessageInstance(message);
   }, [message]);
   
   return (
