@@ -1,4 +1,3 @@
-// src/event/__tests__/event.service.spec.ts
 import mongoose, { Model } from 'mongoose';
 import { EventService } from '../event.service';
 import {
@@ -10,10 +9,15 @@ import {
   Events,
   EventSchema,
 } from '../../../schemas/event.schema';
-
+import {
+  VoucherDocument,
+  VoucherSchema,
+  Voucher,
+} from '../../../schemas/voucher.schema';
 describe('EventService', () => {
   let service: EventService;
   let eventModel: Model<EventDocument>;
+  let voucherModel: Model<VoucherDocument>;
 
   beforeAll(async () => {
     await connectInMemoryMongo();
@@ -21,7 +25,11 @@ describe('EventService', () => {
       'Events',
       EventSchema,
     ) as Model<EventDocument>;
-    service = new EventService(eventModel);
+    voucherModel = mongoose.model<Voucher>(
+      'Voucher',
+      VoucherSchema,
+    ) as Model<VoucherDocument>;
+    service = new EventService(eventModel, voucherModel);
 
     await eventModel.create({
       _id: new mongoose.Types.ObjectId('64f06cfa8f4c3b2b1a2e1f33'),

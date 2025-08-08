@@ -1,66 +1,101 @@
 import { useState } from 'react';
-import { App, Space } from 'antd';
+import { App } from 'antd';
 import { useEffect } from 'react';
 import type { DataTableColumn } from '../../../common/components/data-table/DataTable';
 import type { FilterField } from '../../../common/components/filter-panel/FilterPanel';
 import { useDebounce } from '../../../common/hooks/useDebounce';
-import { voucherService } from '../../../services/voucher.service';
-import DeleteConfirmModal from '../../../common/components/delete-confirm-modal/DeleteConfirmModal';
+import { auditLogService } from '../../../services/audit-log.service';
 
-export interface Vouchers {
+export interface Audit {
   _id: string;
-  code: string;
-  eventName: string;
+  action: string;
+  collectionName: string;
+  performedBy: string;
+  changedFields: Record<string, { old: any; new: any }>;
+  createdAt: string;
 }
 
-export const useVoucherTable = () => {
-  const [vouchers, setVouchers] = useState<Vouchers[]>([]);
+export const useAuditLogTable = () => {
+  const [users, setUsers] = useState<Audit[]>([]);
   const [loading, setLoading] = useState(false);
   const { message } = App.useApp();
   const [filters, setFilters] = useState({});
   const debouncedFilters = useDebounce(filters, 500);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 10,
+    pageSize: 2,
     total: 0,
   });
 
-  const columns: DataTableColumn<Vouchers>[] = [
+  const columns: DataTableColumn<Audit>[] = [
     {
-      title: 'Tên sự kiện',
-      dataIndex: 'eventName',
-      key: 'eventName',
-    },
-    {
-      title: 'Mã voucher',
-      dataIndex: 'code',
-      key: 'code',
+      title: 'Thời gian',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
     },
     {
       title: 'Hành động',
+      dataIndex: 'action',
       key: 'action',
-      render: (_, record) => (
-        <Space>
-          <DeleteConfirmModal
-            title="Xác nhận xoá"
-            content="Bạn có chắc chắn muốn xoá voucher này?"
-            onConfirm={() => handleDelete(record._id)}
-          />
-        </Space>
-      ),
+    },
+    {
+      title: 'Collection',
+      dataIndex: 'collectionName',
+      key: 'collectionName',
+    },
+    {
+      title: 'Thực hiện bởi',
+      dataIndex: 'performedBy',
+      key: 'performedBy',
+    },
+    {
+      title: 'Thay đổi',
+      key: 'changedFields',
+      render: (_, record) => {
+        const changes = Object.entries(record.changedFields || {});
+        return (
+          <div>
+            {changes.map(([field, { old, new: newVal }]) => (
+              <div key={field} style={{ marginBottom: 4 }}>
+                <b>{field}</b>:{' '}
+                <span style={{ color: 'red' }}>{old ?? '(null)'}</span>
+                {' → '}
+                <span style={{ color: 'green' }}>{newVal ?? '(null)'}</span>
+              </div>
+            ))}
+          </div>
+        );
+      },
     },
   ];
 
   const filterFields: FilterField[] = [
     {
-      name: 'eventName',
-      label: 'Tên sự kiện',
+      name: 'createdAt',
+      label: 'Thời gian',
+      type: 'date',
+      colSpan: 4,
+    },
+    {
+      name: 'action',
+      label: 'Hành động',
+      type: 'select',
+      colSpan: 4,
+      options: [
+        { label: 'Create', value: 'create' },
+        { label: 'Update', value: 'update' },
+        { label: 'Delete', value: 'delete' },
+      ],
+    },
+    {
+      name: 'collectionName',
+      label: 'Collection',
       type: 'text',
       colSpan: 4,
     },
     {
-      name: 'code',
-      label: 'Mã voucher',
+      name: 'performedBy',
+      label: 'Thực hiện bởi',
       type: 'text',
       colSpan: 4,
     },
@@ -70,7 +105,7 @@ export const useVoucherTable = () => {
     const query: Record<string, string> = {};
 
     Object.entries(filters).forEach(([key, val]) => {
-      if (!val || val.length === 0) return;
+      if (!val || val.length === 0) return; // bỏ qua null hoặc mảng rỗng
 
       query[key] = val.join(',');
     });
@@ -89,13 +124,13 @@ export const useVoucherTable = () => {
   }) => {
     try {
       setLoading(true);
-      const res = await voucherService.pagination({
+      const res = await auditLogService.pagination({
         page: pagination.current,
         limit: pagination.pageSize,
         ...convertFiltersToQuery(filters),
       });
 
-      setVouchers(res.data);
+      setUsers(res.data);
       const { total } = res.meta;
       setPagination((prev) => ({
         ...prev,
@@ -104,7 +139,7 @@ export const useVoucherTable = () => {
       }));
     } catch (err) {
       console.error(err);
-      // message.error('Lỗi khi tải danh sách người dùng');
+      // message.error('Lỗi khi tải lịch sử thay đổi');
     } finally {
       setLoading(false);
     }
@@ -119,21 +154,8 @@ export const useVoucherTable = () => {
     setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      setLoading(true);
-      await voucherService.delete(id);
-      message.success('Xóa voucher thành công');
-      loadData({ pagination, filters: debouncedFilters });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return {
-    vouchers,
+    users,
     loading,
     columns,
     loadData,

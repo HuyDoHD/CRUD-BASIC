@@ -1,7 +1,7 @@
-// src/api/axios.ts
 import axios from 'axios';
 import { getMessageInstance } from '../utils/messageProxy';
 import { history } from '../utils/history';
+import { authService } from '../services/auth.service';
 
 
 const api = axios.create({
@@ -9,8 +9,11 @@ const api = axios.create({
 });
 
 // Request interceptor
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+api.interceptors.request.use(async (config) => {
+  if (config.url?.includes('/auth/refresh') || config.url?.includes('/auth/logout')) {
+    return config;
+  }
+  const token = await authService.getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -31,8 +34,7 @@ api.interceptors.response.use(
       const message = getMessageInstance();
 
       if (error.response?.status === 401) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        authService.clearToken();
         message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         history.push('/login');
       }

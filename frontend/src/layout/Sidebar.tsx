@@ -1,4 +1,3 @@
-// src/layouts/Sidebar.tsx
 import { Menu } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
@@ -34,6 +33,9 @@ export default function Sidebar() {
         <SubMenu key="admin" icon={<SettingOutlined />} title="Quản trị">
           <Menu.Item key="/users">
             <Link to="/users">Người dùng</Link>
+          </Menu.Item>
+          <Menu.Item key="/audit-log">
+            <Link to="/audit-log">Lịch sử thay đổi</Link>
           </Menu.Item>
         </SubMenu>
       )}

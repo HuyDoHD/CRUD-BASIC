@@ -6,6 +6,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './swagger/swagger.config';
 dotenv.config();
 import { dbConfig } from './config/db.config';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -19,11 +20,11 @@ async function bootstrap() {
         transform: true,
       }),
     );
-
-    // Bật CORS nếu cần
-    app.enableCors();
-
-    // Lấy port từ env hoặc mặc định 3000
+    app.enableCors({
+      origin: process.env.FRONTEND_URL,
+      credentials: true,
+    });
+    app.use(cookieParser());
     const port = process.env.PORT || 3000;
 
     setupSwagger(app);

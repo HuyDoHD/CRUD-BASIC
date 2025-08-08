@@ -9,9 +9,9 @@ export const useLogin = () => {
   const navigate = useNavigate();
 
   const onFinish = async (values: { email: string; password: string }) => {
-    const { accessToken, refreshToken } = await authService.login(values);
-    if (accessToken && refreshToken) {
-      login(accessToken, refreshToken);
+    const { accessToken } = await authService.login(values);
+    if (accessToken) {
+      login(accessToken);
       message.success('Đăng nhập thành công!');
       navigate('/events');
     }

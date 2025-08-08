@@ -6,6 +6,7 @@ import RegisterPage from '../pages/register';
 import EventPage from '../pages/event';
 import UserManagementPage from '../pages/user-management';
 import VoucherPage from '../pages/voucher';
+import AuditLogPage from '../pages/audit-log';
 
 export default function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ export default function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route element={<MainLayout />}>
           <Route path="/users" element={<UserManagementPage />} />
+          <Route path="/audit-log" element={<AuditLogPage />} />
         </Route>
       </Route>
     </Routes>

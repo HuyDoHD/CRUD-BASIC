@@ -143,7 +143,7 @@ export const useUserTable = () => {
       }));
     } catch (err) {
       console.error(err);
-      message.error('Lỗi khi tải danh sách người dùng');
+      // message.error('Lỗi khi tải danh sách người dùng');
     } finally {
       setLoading(false);
     }

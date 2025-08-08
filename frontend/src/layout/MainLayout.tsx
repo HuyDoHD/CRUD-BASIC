@@ -1,4 +1,3 @@
-// src/layouts/MainLayout.tsx
 import { Layout } from 'antd';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';

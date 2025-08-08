@@ -1,4 +1,3 @@
-// src/swagger/swagger.config.ts
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -12,7 +11,7 @@ export function setupSwagger(app: INestApplication): void {
       scheme: 'bearer',
       bearerFormat: 'JWT',
     })
-    .addSecurityRequirements('bearer') // tự động thêm Authorization header
+    .addSecurityRequirements('bearer')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

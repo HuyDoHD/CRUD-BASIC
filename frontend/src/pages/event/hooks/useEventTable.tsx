@@ -112,7 +112,7 @@ export const useEventTable = () => {
       }));
     } catch (err) {
       console.error(err);
-      message.error('Lỗi khi tải danh sách sự kiện');
+      // message.error('Lỗi khi tải danh sách sự kiện');
     } finally {
       setLoading(false);
     }

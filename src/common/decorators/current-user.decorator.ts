@@ -1,4 +1,3 @@
-// src/common/decorators/current-user.decorator.ts
 import {
   ContextType,
   createParamDecorator,

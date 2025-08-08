@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { auditPlugin } from 'src/modules/audit/audit.plugin';
 
 export type UserDocument = User & Document;
 
@@ -37,3 +38,4 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.plugin(auditPlugin, { modelName: 'users' });

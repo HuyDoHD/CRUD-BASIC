@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/user.service';
 import { UserDto } from './dto/user.dto';
@@ -29,7 +29,7 @@ export class AuthService {
 
     const access_token = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '1d',
+      expiresIn: '10s',
     });
 
     const refresh_token = this.jwtService.sign(payload, {
@@ -45,12 +45,14 @@ export class AuthService {
 
   async refreshToken(token: string): Promise<{ access_token: string }> {
     try {
+      console.log('Refresh token API hit at', token);
+    
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
-
+      console.log('Payload', payload);
       const user = await this.userService.findOne(payload.sub);
-      if (!user) throw new UnauthorizedException();
+      if (!user) throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
 
       const newAccessToken = this.jwtService.sign(
         {
@@ -60,13 +62,13 @@ export class AuthService {
         },
         {
           secret: process.env.JWT_ACCESS_SECRET,
-          expiresIn: '1d',
+          expiresIn: '10s',
         },
       );
 
       return { access_token: newAccessToken };
     } catch (e) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
     }
   }
 }

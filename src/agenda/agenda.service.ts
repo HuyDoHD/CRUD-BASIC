@@ -1,4 +1,3 @@
-// src/agenda/agenda.service.ts
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import Agenda from 'agenda';
 import mongoose from 'mongoose';

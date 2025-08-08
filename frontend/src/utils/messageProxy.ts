@@ -1,4 +1,3 @@
-// src/utils/messageProxy.ts
 import type { MessageInstance } from 'antd/es/message/interface';
 
 let message: MessageInstance;

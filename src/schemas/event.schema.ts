@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { auditPlugin } from 'src/modules/audit/audit.plugin';
 
 export type EventDocument = Document & Events;
 
@@ -21,3 +22,4 @@ export class Events {
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
+EventSchema.plugin(auditPlugin, { modelName: 'events' });

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { auditPlugin } from 'src/modules/audit/audit.plugin';
 
 export type VoucherDocument = Voucher & Document;
 
@@ -16,3 +17,4 @@ export class Voucher {
 }
 
 export const VoucherSchema = SchemaFactory.createForClass(Voucher);
+VoucherSchema.plugin(auditPlugin, { modelName: 'vouchers' });
